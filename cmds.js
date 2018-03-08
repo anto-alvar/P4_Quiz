@@ -101,7 +101,6 @@ exports.playCmd = rl => {
 	
 	let score = 0;
 	let toBeAsked = [];
-	//for meter id
 	
 	if (toBeAsked === undefined || toBeAsked.length == 0) {
 		log(`${colorize(' ¡Has acabado el quiz!', 'green')}`);
@@ -142,12 +141,14 @@ exports.testCmd = (rl, id) => {
 				if (rsp.toLowerCase().trim() === quiz.answer.toLowerCase().trim()) {
 					log("Su respuesta es:");
 					biglog('Correcta', 'green');
+					log("Correcto");
 					rl.prompt();
 				}
 				
 				else {
 					log("Su respuesta es:");
 					biglog('Incorrecta', 'red');
+					log("Incorrecto");
 					rl.prompt();
 				}
 			})
