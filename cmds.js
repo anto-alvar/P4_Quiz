@@ -127,7 +127,34 @@ exports.creditsCmd = rl => {
 };
 
 exports.testCmd = (rl, id) => {
-	//if (id)
+	if (typeof id === "undefined") {
+		errorlog('Falta el parametro id.');
+		rl.prompt();
+	}
+	else {
+		try {
+			
+			const quiz = model.getByIndex(id);
+			
+			rl.question(colorize(`${quiz.question} ?` , 'yellow'), respuesta => {
+				const rsp = respuesta;
+				
+				if (rsp.toLowerCase().trim() === quiz.answer.toLowerCase().trim()) {
+					biglog('¡Correcto!', 'green');
+					rl.prompt();
+				}
+				
+				else {
+					biglog('¡Incorrecto!', 'red');
+					rl.prompt();
+				}
+			})
+			
+		}
+		catch (error) {
+			errorlog(error.message);
+		}
+	}
 };
 
 exports.quitCmd = rl => {
