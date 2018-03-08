@@ -140,18 +140,21 @@ exports.testCmd = (rl, id) => {
 				const rsp = respuesta;
 				
 				if (rsp.toLowerCase().trim() === quiz.answer.toLowerCase().trim()) {
-					biglog('¡Correcto!', 'green');
+					log("Su respuesta es:");
+					biglog('Correcta', 'green');
 					rl.prompt();
 				}
 				
 				else {
-					biglog('¡Incorrecto!', 'red');
+					log("Su respuesta es:");
+					biglog('Incorrecta', 'red');
 					rl.prompt();
 				}
 			})
 			
 		}
 		catch (error) {
+			
 			errorlog(error.message);
 		}
 	}
