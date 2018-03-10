@@ -4,6 +4,11 @@ const model = require("./model");
 
 // Funciones que implementan los comandos
 
+function getRandom() {
+  return Math.random();
+}
+
+
 exports.helpCmd = rl => {
 		log("Commandos:");
 		log("	h|help - Muestra esta ayuda.");
@@ -100,19 +105,61 @@ exports.editCmd = (rl, id) => {
 exports.playCmd = rl => {
 	
 	let score = 0;
-	let toBeAsked = [];
+	let toBeAsked = [model.count()];
 	
-	if (toBeAsked === undefined || toBeAsked.length == 0) {
-		log(`${colorize(' ¡Has acabado el quiz!', 'green')}`);
-		log(` Tu puntuación final: ${colorize(score, 'magenta')}`);
-		rl.prompt();
+	for (i = 0; i < model.count(); i++) { 
+		toBeAsked[i] = i;
 	}
-	else {
-		let id = azar;
-
-
-		rl.prompt();
+	
+	const playOne = () => {
+	
+		if (toBeAsked === undefined || toBeAsked.length == 0) {
+			log(`${colorize(' ¡Has acabado el quiz!', 'green')}`);
+			log(` Tu puntuación final: ${colorize(score, 'magenta')}`);
+			rl.prompt();
+		}
+		
+		else {
+			
+			let idPregunta = getRandom();
+			log(`${idPregunta}`);
+			idPregunta = idPregunta * model.count();
+			log(`${idPregunta}`);
+			idPregunta = Math.round(idPregunta);
+			log(`${idPregunta}`);
+			
+			let quiz = model.getByIndex(idPregunta);
+			toBeAsked.splice(idPregunta, 1);
+			
+			let preguntas = toBeAsked.toString();
+			log(`${preguntas}`);
+			
+			rl.question(colorize(`${quiz.question} ?` , 'yellow'), respuesta => {
+				const rsp = respuesta;
+					
+				if (rsp.toLowerCase().trim() === quiz.answer.toLowerCase().trim()) {
+					score++;
+					log("Su respuesta es:");
+					biglog('Correcta', 'green');
+					log("Correcto");
+					log(` Acertadas: ${colorize(score, 'magenta')}`)
+					playOne();
+					rl.prompt();
+				}
+					
+				else {
+					log("Su respuesta es:");
+					biglog('Incorrecta', 'red');
+					log("Incorrecto");
+					log(` Acertadas: ${colorize(score, 'magenta')}`)
+					rl.prompt();
+				}
+			})
+				
+		}
 	}
+	
+	playOne();
 	
 	
 	
