@@ -113,49 +113,52 @@ exports.playCmd = rl => {
 	
 	const playOne = () => {
 	
+		let idPregunta = getRandom();
+
 		if (toBeAsked === undefined || toBeAsked.length == 0) {
 			log(`${colorize(' ¡Has acabado el quiz!', 'green')}`);
 			log(` Tu puntuación final: ${colorize(score, 'magenta')}`);
 			rl.prompt();
-		}
-		
-		else {
+		}	
+
+			else {
 			
-			let idPregunta = getRandom();
-			log(`${idPregunta}`);
-			idPregunta = idPregunta * model.count();
-			log(`${idPregunta}`);
+			idPregunta = idPregunta * (model.count() -1);
 			idPregunta = Math.round(idPregunta);
-			log(`${idPregunta}`);
+
+			if (toBeAsked.includes(idPregunta)) {
 			
-			let quiz = model.getByIndex(idPregunta);
-			toBeAsked.splice(idPregunta, 1);
+				let quiz = model.getByIndex(idPregunta);
+				toBeAsked.splice( toBeAsked.indexOf(idPregunta), 1 );
 			
-			let preguntas = toBeAsked.toString();
-			log(`${preguntas}`);
+				rl.question(colorize(`${quiz.question} ?` , 'yellow'), respuesta => {
+					const rsp = respuesta;
+						
+					if (rsp.toLowerCase().trim() === quiz.answer.toLowerCase().trim()) {
+						score++;
+						log("Su respuesta es:");
+						biglog('Correcta', 'green');
+						log("Correcto");
+						log(` Acertadas: ${colorize(score, 'magenta')}`)
+						playOne();
+						rl.prompt();
+					}
+						
+					else {
+						log("Su respuesta es:");
+						biglog('Incorrecta', 'red');
+						log("Incorrecto");
+						log(` Acertadas: ${colorize(score, 'magenta')}`)
+						log(`${colorize(' ¡Fin del juego!', 'red')}`);
+
+						rl.prompt();
+					}
+				})
+			}
 			
-			rl.question(colorize(`${quiz.question} ?` , 'yellow'), respuesta => {
-				const rsp = respuesta;
-					
-				if (rsp.toLowerCase().trim() === quiz.answer.toLowerCase().trim()) {
-					score++;
-					log("Su respuesta es:");
-					biglog('Correcta', 'green');
-					log("Correcto");
-					log(` Acertadas: ${colorize(score, 'magenta')}`)
-					playOne();
-					rl.prompt();
-				}
-					
-				else {
-					log("Su respuesta es:");
-					biglog('Incorrecta', 'red');
-					log("Incorrecto");
-					log(` Acertadas: ${colorize(score, 'magenta')}`)
-					rl.prompt();
-				}
-			})
-				
+			else {
+				playOne();
+			}
 		}
 	}
 	
