@@ -1,5 +1,5 @@
 const {log, biglog, errorlog, colorize} = require("./out");
-const model = require("./model");
+const {models} = require("./model");
 
 
 // Funciones que implementan los comandos
@@ -26,28 +26,56 @@ exports.helpCmd = rl => {
 
 
 exports.listCmd = rl => {
-	model.getAll().forEach((quiz, id) => {
-		log(`[${ colorize(id, 'magenta')}]: ${quiz.question}`);
+
+	models.quiz.findAll()
+	.each(quiz => {
+			log(`[${colorize(quiz.id, 'magenta')}]: ${quiz.question}`);
+		})
+	.catch(error => {
+		errorlog(error.message);
+	})
+	.then(() => {
+		rl.prompt();
 	});
-	rl.prompt();
+
+};
+
+
+const validateId = id => {
+	return new Promise((resolve, reject) => {
+		if (typeof id === "undefined") {
+			reject(new Error(`Falta el parametro <id>.`));
+		}
+		else {
+			id = parseInt(id);
+			if (Number.isNaN(id)) {
+				reject(new Error(`El valor del parámetro <id> no es un número.`));
+			}
+			else {
+				resolve(id);
+			}
+		}
+	});
 };
 
 
 exports.showCmd = (rl, id) => {
-	if (typeof id === "undefined") {
-		errorlog('Falta el parametro id.');
-	}
-	else {
-		try {
-			const quiz = model.getByIndex(id);
-			log(`[${colorize(id, 'magenta')}]: ${quiz.question} ${colorize('=>', 'magenta')} ${quiz.answer}`);
+	validateId(id)
+	.then(id => models.quiz.findById(id))
+	.then(quiz => {
+		if (!quiz) {
+			throw new Error(`No existe un quiz asociado al ID = ${id}`);
 		}
-		catch (error) {
-			errorlog(error.message);
-		}
-	}
-	rl.prompt();
+		log(`[${colorize(quiz.id, 'magenta')}]: ${quiz.question} ${colorize('=>','magenta')} ${quiz.answer}`);
+	})
+	.catch(error => {
+		errorlog(error.message);
+	})
+	.then(() => {
+		rl.prompt();
+	});
 };
+
 
 exports.addCmd = rl => {
 	rl.question(colorize(' Introduzca una pregunta: ', 'red'), question => {
