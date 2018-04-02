@@ -1,6 +1,4 @@
 
-import { Socket } from 'net';
-
 const readline = require('readline');
 
 const {log, biglog, errorlog, colorize} = require("./out");
